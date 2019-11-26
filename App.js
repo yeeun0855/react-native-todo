@@ -25,7 +25,7 @@ export default class App extends React.Component {
           returnKeyType={"done"}
           autoCorrect={false} />
         <ScrollView contentContainerStyle={styles.toDos}>
-      <ToDo />
+      <ToDo text={"hello its me i just wondering"}/>
         </ScrollView>
         </View>
       </View>

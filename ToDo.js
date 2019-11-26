@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 
@@ -7,66 +7,105 @@ export default class ToDo extends Component {
     state = {
         isEditing: false,
         isCompleted: false,
-
+        toDovalue: "",
     };
     render() {
-        const { isEditing, isCompleted } = this.state;
+        const { isEditing, isCompleted, toDovalue } = this.state;
+        const { text } = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.column}>
-                    <TouchableOpacity onPress={this._toggoleComplete}>
+                    <TouchableOpacity onPress={this._toggleComplete}>
                         <View style={[
                             styles.circle,
                             isCompleted ? styles.completedCircle : styles.uncompleteCircle
                         ]} />
                     </TouchableOpacity>
-                    <Text style={[
-                        styles.text,
-                        isCompleted ? styles.completedText : styles.uncompletedText
-                    ]}>Hello</Text>
+
+                    {isEditing ? (
+                        <TextInput 
+                            style={[styles.input, styles.text, isCompleted ? styles.completedText : styles.uncompletedText]} 
+                            value={toDovalue}
+                            multiline={true}
+                            onChangeText={this._controllInput}
+                            returnKeyType={"done"}
+                            onBlur={this._finishEditing}
+                             />
+                        ) : (
+                        <Text style={[
+                            styles.text,
+                            // styles.input,
+                            isCompleted ? styles.completedText : styles.uncompletedText
+                        ]}>{text}</Text>
+                    )}
                 </View>
                 {isEditing ? (
                     <View style={styles.actions}>
                         <TouchableOpacity onPressOut={this._finishEditing}>
                             <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>브이</Text>
+                                <Text style={styles.actionText}>✅</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                 ) : (
-                    <View style={styles.actions}>
-                        <TouchableOpacity onPressOut={this._startEditing}>
-                            <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>연필</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>엑스</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                </View>
+                        <View style={styles.actions}>
+                            <TouchableOpacity onPressOut={this._startEditing}>
+                                <View style={styles.actionContainer}>
+                                    <Text style={styles.actionText}>✏️</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <View style={styles.actionContainer}>
+                                    <Text style={styles.actionText}>❌</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+            </View>
         )
     }
-    _toggoleComplete = () => {
+    _toggleComplete = () => {
         this.setState(prevState => {
-            return ({
+            return {
                 isCompleted: !prevState.isCompleted,
-            })
+            }
         })
     }
     _startEditing = () => {
-        this.setState = ({
-            isEditing: true
-        });
+        const { text } = this.props;
+        this.setState({
+            isEditing: true,
+            toDovalue: text
+        })
     }
     _finishEditing = () => {
-        this.setState = ({
-            isEditing: false
+        this.setState({
+            isEditing:false
+        })
+    }
+    _controllInput = text => {
+        this.setState(() => {
+            return {
+                toDovalue:text
+            }
         });
     }
+    // _startEditing = () => {
+    //     const { text } = this.props;
+    //     this.setState(() => {
+    //         return {
+    //             isEditing: true,
+    //             toDovalue: text
+    //         }
+    //     });
+    // }
+    // _finishEditing = () => {
+    //     this.setState(() => {
+    //         return {
+    //             isEditing: false
+    //         }
+    //     });
+    // }
 }
 
 const styles = StyleSheet.create({
@@ -117,5 +156,9 @@ const styles = StyleSheet.create({
     actionContainer: {
         marginVertical: 10,
         marginHorizontal: 10,
+    },
+    input: {
+        marginVertical: 15,
+        width: width/2,
     }
 })
