@@ -1,17 +1,31 @@
 import React, { Component } from "react";
 import { View, Text, TextInput, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import PropTypes from 'prop-types';
 
 const { height, width } = Dimensions.get("window");
 
 export default class ToDo extends Component {
+    constructor(props) {
+        super(props);
+        this.state= {
+            isEditing: false,
+            toDovalue: props.text
+        };
+    }
+    static PropTypes ={
+        text: PropTypes.string.isRequired,
+        isCompleted: PropTypes.bool.isRequired,
+        deleteToDo: PropTypes.func.isRequired,
+        id: PropTypes.string.isRequired
+    }
     state = {
         isEditing: false,
-        isCompleted: false,
+        // isCompleted: false,
         toDovalue: "",
     };
     render() {
         const { isEditing, isCompleted, toDovalue } = this.state;
-        const { text } = this.props;
+        const { text,id ,deleteToDo} = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.column}>
@@ -24,7 +38,7 @@ export default class ToDo extends Component {
 
                     {isEditing ? (
                         <TextInput 
-                            style={[styles.input, styles.text, isCompleted ? styles.completedText : styles.uncompletedText]} 
+                            style={[styles.text, styles.input, isCompleted ? styles.completedText : styles.uncompletedText]} 
                             value={toDovalue}
                             multiline={true}
                             onChangeText={this._controllInput}
@@ -54,7 +68,7 @@ export default class ToDo extends Component {
                                     <Text style={styles.actionText}>✏️</Text>
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => deleteToDo(id)}>
                                 <View style={styles.actionContainer}>
                                     <Text style={styles.actionText}>❌</Text>
                                 </View>
@@ -72,10 +86,10 @@ export default class ToDo extends Component {
         })
     }
     _startEditing = () => {
-        const { text } = this.props;
+        // const { text } = this.props;
         this.setState({
             isEditing: true,
-            toDovalue: text
+            // toDovalue: text
         })
     }
     _finishEditing = () => {
@@ -148,7 +162,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         width: width / 2,
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
     },
     actions: {
         flexDirection: "row",
