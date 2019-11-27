@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, StatusBar, View, Text, TextInput, Dimensions, Platform, ScrollView } from 'react-native';
+import { StyleSheet, StatusBar, View, Text, TextInput, Dimensions, Platform, ScrollView, AsyncStorage } from 'react-native';
 // import { Platform } from '@unimodules/core';
 import { AppLoading } from 'expo';
 import { v1 as uuid } from 'uuid';
@@ -40,9 +40,14 @@ export default class App extends React.Component {
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* <ToDo text={"hello its me i just wondering"} /> */}
             {Object.values(toDos).map(toDo => 
-                <ToDo key={toDo.id} 
+                <ToDo 
+                key={toDo.id} 
+                deleteToDo={this._deleteToDo}
+                uncompleteToDo={this._uncompleteToDo}
+                completeToDo={this._completeToDo}
+                updateToDo={this._updateToDo}
                 {...toDo}
-                deleteToDo={this._deleteToDo} />
+                />
               )}
           </ScrollView>
         </View>
@@ -90,6 +95,7 @@ export default class App extends React.Component {
             ...newToDoObject
           }
         }
+        this._saveToDos(newState.toDos)
         return { ...newState };
       })
     }
@@ -102,8 +108,55 @@ export default class App extends React.Component {
         ...prevState,
         ...toDos
       }
+      this._saveToDos(newState.toDos)
       return {...newState}
     })
+  }
+  _uncompleteToDo = id => { // 해당 id를 갖고 있는 항목이 있다면 덮어쓰기
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            isCompleted:false
+          }
+        }
+      }
+      this._saveToDos(newState.toDos)
+      return { ...newState }
+    })
+  }
+  _completeToDo = id => { // 해당 id를 갖고 있는 항목이 있다면 덮어쓰기
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: { ...prevState.toDos[id], isCompleted: true }
+        }
+      }
+      this._saveToDos(newState.toDos)
+      return { ...newState }
+    })
+  }
+  _updateToDo = (id, text) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id] : {...prevState.toDos[id], text:text}
+        }
+      }
+      this._saveToDos(newState.toDos)
+      return { ...newState }
+    })
+  }
+  // 묶기
+  _saveToDos = (newToDos) => {
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos));
   }
 }
 
