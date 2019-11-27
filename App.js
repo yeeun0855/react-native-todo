@@ -39,7 +39,7 @@ export default class App extends React.Component {
             onSubmitEditing={this._addTodo} />
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* <ToDo text={"hello its me i just wondering"} /> */}
-            {Object.values(toDos).map(toDo => 
+            {Object.values(toDos).reverse().map(toDo => 
                 <ToDo 
                 key={toDo.id} 
                 deleteToDo={this._deleteToDo}
@@ -59,10 +59,20 @@ export default class App extends React.Component {
       newToDo: text
     })
   }
-  _loadToDos = () => {
-    this.setState({
-      loadedTodos: true
-    })
+  _loadToDos = async () => {
+    try {
+      // toDos: key value obj => 폰에 저장
+      const toDos = await AsyncStorage.getItem("toDos");
+      console.log(toDos)
+      this.setState({
+        loadedTodos: true,
+        toDos: JSON.parse(toDos)
+      })
+    } catch(err) {
+      console.log(err)
+    }
+
+   
   }
   _addTodo = () => {
     const { newToDo } = this.state;
